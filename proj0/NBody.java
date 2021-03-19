@@ -33,9 +33,11 @@ public class NBody {
 		String backGround = "images/starfield.jpg";
 
 		Planet[] planets = readPlanets(filename);
+		/*
 		for (Planet p : planets){
 			p.imgFileName = "images/" + p.imgFileName;
 		}
+		*/
 		double universeRadius = readRadius(filename);
 
 		//StdDraw.setScale(-universeRadius, universeRadius);
