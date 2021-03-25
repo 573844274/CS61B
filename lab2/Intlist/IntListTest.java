@@ -19,7 +19,6 @@ public class IntListTest {
         IntList x = IntList.of(3, 2, 1);
         assertEquals(threeTwoOne, x);
     }
-
     @Test
     public void testdSquareList() {
         IntList L = IntList.of(1, 2, 3);
