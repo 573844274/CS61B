@@ -1,4 +1,5 @@
 import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotEquals;
 
 import org.junit.Test;
 
@@ -66,6 +67,36 @@ public class IntListTest {
         assertEquals(IntList.of(1, 2, 3), A);
     }
 
+    @Test
+    public void testReverse() {
+        IntList myList = IntList.of(0, 1, 2, 3);
+        IntList exp = IntList.of(3, 2, 1, 0);
+        IntList emptyList = IntList.of();
+        IntList input = IntList.reverse(myList);
+        assertEquals(exp, input);
+        assertNotEquals(IntList.of(0, 1, 2, 3), myList);
+        assertEquals(emptyList, IntList.reverse(emptyList));
+    }
+
+    @Test
+    public void testEndToFirst(){
+        IntList myList = IntList.of(0, 1, 2, 3);
+        IntList input1 = IntList.endToFirst(myList);
+        IntList input2 = IntList.endToFirst(input1);
+        IntList input3 = IntList.of();
+        IntList expected1 = IntList.of(2,3,0,1);
+        IntList expected2 = IntList.of(2,3,0,1);
+        IntList expected3 = IntList.of();
+        assertEquals(expected1, input1);
+        assertEquals(expected2, input2);
+        assertEquals(expected3, input3);
+
+        IntList two = IntList.of(0, 1);
+        IntList input4 =  IntList.endToFirst(two);
+        IntList expected4 = IntList.of(1, 0);
+        assertEquals(expected4, input4);
+
+    }
     /** If you're running this from the command line, you'll need
       * to add a main method. See ArithmeticTest.java for an
       * example. */
