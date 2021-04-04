@@ -1,4 +1,7 @@
 /** Performs some basic linked list tests. */
+import static org.junit.Assert.*;
+import org.junit.Test;
+
 public class LinkedListDequeTest {
 	/* Utility method for printing out empty checks. */
 	public static boolean checkEmpty(boolean expected, boolean actual) {
@@ -81,11 +84,16 @@ public class LinkedListDequeTest {
 
 	}
 
-	public static void main(String[] args) {
-		System.out.println("Running tests.\n");
-		addIsEmptySizeTest();
-		addRemoveTest();
+    @Test
+	public void testLLS() {
+        LinkedListDeque<Integer> a1 = new LinkedListDeque<Integer>();
+        a1.addLast(1);
+        a1.addFirst(0);
+        a1.removeFirst();
+        a1.removeLast();
+        a1.addLast(0);
+        int zero = a1.get(0);
+        assertEquals(0, zero);
 	}
-
 
 }

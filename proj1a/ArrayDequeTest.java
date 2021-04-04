@@ -5,7 +5,8 @@ import org.junit.Test;
 public class ArrayDequeTest {
     @Test
     public void testConstructor() {
-        ArrayDeque<Integer> one = new ArrayDeque<Integer>(1);
+        ArrayDeque<Integer> one = new ArrayDeque<Integer>();
+        one.addFirst(1);
         int exp = 1;
         int input = one.get(0);
         assertEquals(exp, input);
@@ -14,7 +15,8 @@ public class ArrayDequeTest {
     }
     @Test
     public void testAdd() {
-        ArrayDeque<Integer> a1 = new ArrayDeque<Integer>(1);
+        ArrayDeque<Integer> a1 = new ArrayDeque<Integer>();
+        a1.addFirst(1);
         a1.addFirst(0);
         a1.addLast(2);
         a1.addLast(3);
@@ -27,7 +29,8 @@ public class ArrayDequeTest {
     }
     @Test
     public void restRemove() {
-        ArrayDeque<Integer> a1 = new ArrayDeque<Integer>(1);
+        ArrayDeque<Integer> a1 = new ArrayDeque<Integer>();
+        a1.addFirst(1);
         a1.addFirst(0);
         a1.addLast(2);
         a1.removeFirst();
@@ -50,7 +53,8 @@ public class ArrayDequeTest {
 
     @Test
     public void testResize() {
-        ArrayDeque<Integer> a1 = new ArrayDeque<Integer>(1);
+        ArrayDeque<Integer> a1 = new ArrayDeque<Integer>();
+        a1.addLast(1);
         a1.addFirst(0);
         a1.addLast(2);
         a1.addLast(3);

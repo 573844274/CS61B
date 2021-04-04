@@ -1,11 +1,11 @@
 public class LinkedListDeque<T> {
 
-    public class TNode {
+    private class TNode {
         private T item;
         private TNode next;
         private TNode back;
 
-        public TNode(T i, TNode n, TNode b) {
+        private TNode(T i, TNode n, TNode b) {
             item = i;
             next = n;
             back = b;
@@ -13,24 +13,14 @@ public class LinkedListDeque<T> {
     }
 
     private TNode sentiniel;
+    private int size = 0;
 
-    {
+    public LinkedListDeque() {
         sentiniel = new TNode(null, null, null);
         sentiniel.next = sentiniel;
         sentiniel.back = sentiniel;
     }
-    private int size = 0;
 
-    public LinkedListDeque() {
-        sentiniel.next = new TNode(null, sentiniel, sentiniel);
-        sentiniel.back = sentiniel.next;
-    }
-
-    public LinkedListDeque(T x) {
-        sentiniel.next = new TNode(x, sentiniel, sentiniel);
-        sentiniel.back = sentiniel.next;
-        size += 1;
-    }
 
     public void addFirst(T item) {
         /* Adds an item of type T to the front of the deque. */
@@ -100,7 +90,7 @@ public class LinkedListDeque<T> {
         return p.item;
     }
 
-    public T  helpGetRecursive(TNode p, int index) {
+    private T  helpGetRecursive(TNode p, int index) {
         if (index == 0) {
             return p.item;
         } else {
@@ -111,7 +101,7 @@ public class LinkedListDeque<T> {
         if (index >= size) {
             return null;
         } else {
-            return helpGetRecursive(sentiniel.next,index);
+            return helpGetRecursive(sentiniel.next, index);
         }
     }
 }

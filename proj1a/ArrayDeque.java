@@ -10,14 +10,9 @@ public class ArrayDeque<T> {
 
     }
 
-    public ArrayDeque(T x) {
-        box[pointer] = x;
-        size += 1;
-    }
-
     public void addFirst(T item) {
         /* Adds an item of type T to the front of the deque. */
-        if (size == capacity){
+        if (size == capacity) {
             resize(capacity * 2);
         }
         if (pointer == 0) {
@@ -31,7 +26,7 @@ public class ArrayDeque<T> {
 
     public void addLast(T item) {
         /* Adds an item of type T to the back of the deque. */
-        if (size == capacity){
+        if (size == capacity) {
             resize(capacity * 2);
         }
         if (pointer + size < capacity) {
@@ -55,7 +50,7 @@ public class ArrayDeque<T> {
     public void printDeque() {
         /* Prints the items in the deque from first to last, separated by a space. */
         int target;
-        for (int i = 0;i < size; i += 1) {
+        for (int i = 0; i < size; i += 1) {
             if (pointer + i >= capacity) {
                 target = pointer + i - capacity;
             } else {
@@ -68,8 +63,8 @@ public class ArrayDeque<T> {
     public T removeFirst() {
         /* Removes and returns the item at the front of the deque.
          * If no such item exists, returns null. */
-        if (capacity > startingCapacity && size < capacity *usage) {
-            resize(capacity/2);
+        if (capacity > startingCapacity && size < capacity * usage) {
+            resize(capacity / 2);
         }
         if (size == 0) {
             return null;
@@ -112,10 +107,10 @@ public class ArrayDeque<T> {
         }
     }
 
-    public void resize(int newCapacity) {
+    private void resize(int newCapacity) {
         T[] newBox = (T[]) new Object[newCapacity];
         int target;
-        for (int i = 0;i < size; i += 1) {
+        for (int i = 0; i < size; i += 1) {
             if (pointer + i >= capacity) {
                 target = pointer + i - capacity;
             } else {
