@@ -1,5 +1,4 @@
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertNotEquals;
 
 import org.junit.Test;
 public class ArrayDequeTest {
@@ -24,7 +23,7 @@ public class ArrayDequeTest {
         int input = a1.get(3);
         assertEquals(exp, input);
         int size = 4;
-        assertEquals(size,a1.size());
+        assertEquals(size, a1.size());
         assertNull(a1.get(5));
     }
     @Test
@@ -45,7 +44,7 @@ public class ArrayDequeTest {
         assertEquals(3, three);
         int one = a1.get(0);
         int two = a1.get(1);
-        assertEquals(1,one);
+        assertEquals(1, one);
         assertEquals(2, two);
         assertEquals(2, a1.size());
         a1.printDeque();
@@ -64,7 +63,7 @@ public class ArrayDequeTest {
         a1.addLast(7);
         a1.addLast(8);
         a1.addLast(9);
-        for (int i = 0;i < 8; i += 1){
+        for (int i = 0; i < 8; i += 1) {
             a1.removeLast();
         }
         int zero = a1.get(0);

@@ -62,6 +62,9 @@ public class LinkedListDeque<T> {
     public T removeFirst() {
         /* Removes and returns the item at the front of the deque.
          * If no such item exists, returns null. */
+        if (size == 0) {
+            return null;
+        }
         T removeItem = sentiniel.next.item;
         sentiniel.next = sentiniel.next.next;
         sentiniel.next.back = sentiniel;
@@ -72,6 +75,9 @@ public class LinkedListDeque<T> {
     public T removeLast() {
         /* Removes and returns the item at the back of the deque.
          * If no such item exists, returns null. */
+        if (size == 0) {
+            return null;
+        }
         T removeItem = sentiniel.back.item;
         sentiniel.back = sentiniel.back.back;
         sentiniel.back.next = sentiniel;
