@@ -80,7 +80,7 @@ public class ComplexOomage implements Oomage {
         return new ComplexOomage(params);
     }
 
-    public static ComplexOomage deadlyRandomComplexOomage() {
+    public ComplexOomage deadlyRandomComplexOomage() {
         int N = StdRandom.uniform(7, 10);
         ArrayList<Integer> params = new ArrayList<>(N);
         for (int i = 0; i < 5; i += 1) {
