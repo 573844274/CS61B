@@ -25,7 +25,7 @@ public class Board implements WorldState {
      */
     public int tileAt(int i, int j) {
         if (!inBound(i, j)) {
-            throw new IllegalArgumentException("i, j cannot exceed [0, N)");
+            throw new IndexOutOfBoundsException("i, j cannot exceed [0, N)");
         }
         return board[i][j];
     }
@@ -141,6 +141,9 @@ public class Board implements WorldState {
             return false;
         }
         Board that = (Board) y;
+        if (that.size() != this.size()) {
+            return false;
+        }
         for (int i = 0; i < size(); i += 1) {
             for (int j = 0; j < size(); j += 1) {
                 if (this.tileAt(i, j) != that.tileAt(i, j)) {
@@ -151,7 +154,7 @@ public class Board implements WorldState {
         return true;
     }
     @Override
-    public int hashCode(){
+    public int hashCode() {
         return board[0][0];
     }
 
@@ -163,7 +166,7 @@ public class Board implements WorldState {
         s.append(N + "\n");
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < N; j++) {
-                s.append(String.format("%2d ", tileAt(i,j)));
+                s.append(String.format("%2d ", tileAt(i, j)));
             }
             s.append("\n");
         }

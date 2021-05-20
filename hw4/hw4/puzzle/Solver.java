@@ -63,7 +63,7 @@ public class Solver {
         LinkedList<WorldState> sequenceOfSolution = new LinkedList<WorldState>();
         Stack<WorldState> worldStatesStack = new Stack<WorldState>();
         SearchNode nodePointer = solution;
-        while (nodePointer.previous != null) {
+        while (nodePointer != null) {
             worldStatesStack.push(nodePointer.worldState);
             nodePointer = nodePointer.previous;
         }
