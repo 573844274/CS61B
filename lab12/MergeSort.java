@@ -35,7 +35,15 @@ public class MergeSort {
     private static <Item extends Comparable> Queue<Queue<Item>>
             makeSingleItemQueues(Queue<Item> items) {
         // Your code here!
-        return null;
+        Queue<Queue<Item>> output = new Queue<Queue<Item>>();
+        for (int i = 0; i < items.size(); i += 1) {
+            Item popItem = items.dequeue();
+            Queue<Item> subQueue = new Queue<>();
+            subQueue.enqueue(popItem);
+            items.enqueue(popItem);
+            output.enqueue(subQueue);
+        }
+        return output;
     }
 
     /**
@@ -54,13 +62,42 @@ public class MergeSort {
     private static <Item extends Comparable> Queue<Item> mergeSortedQueues(
             Queue<Item> q1, Queue<Item> q2) {
         // Your code here!
-        return null;
+        Queue<Item> output = new Queue<>();
+        int N = q1.size() + q2.size();
+        for (int i = 0; i < N; i += 1) {
+            output.enqueue(getMin(q1, q2));
+        }
+        return output;
     }
 
     /** Returns a Queue that contains the given items sorted from least to greatest. */
     public static <Item extends Comparable> Queue<Item> mergeSort(
             Queue<Item> items) {
         // Your code here!
-        return items;
+        Queue<Queue<Item>> discreteItems = makeSingleItemQueues(items);
+        while (discreteItems.size() > 1) {
+            Queue<Item> q1 = discreteItems.dequeue();
+            Queue<Item> q2 = discreteItems.dequeue();
+            discreteItems.enqueue(mergeSortedQueues(q1, q2));
+        }
+        return discreteItems.dequeue();
+    }
+
+    public static void main(String[] args) {
+        Queue<String> students = new Queue<>();
+        students.enqueue("Emily");
+        students.enqueue("Bob");
+        students.enqueue("Chandler");
+        students.enqueue("Zeno");
+        students.enqueue("Andy");
+        Queue<String> sth = mergeSort(students);
+        System.out.println("The original sequence: ");
+        for (String name : students) {
+            System.out.println(name);
+        }
+        System.out.println("The sorted sequence: ");
+        for (String name : sth) {
+            System.out.println(name);
+        }
     }
 }
