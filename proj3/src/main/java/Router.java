@@ -1,8 +1,6 @@
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 /**
  * This class provides a shortestPath method for finding routes between two points
  * on the map. Start by using Dijkstra's, and if your code isn't fast enough for your
@@ -25,7 +23,49 @@ public class Router {
      */
     public static List<Long> shortestPath(GraphDB g, double stlon, double stlat,
                                           double destlon, double destlat) {
-        return null; // FIXME
+        long startPoint = g.closest(stlon, stlat);
+        long endPoint = g.closest(destlon, destlat);
+        RouterNodeComparator rnc = new RouterNodeComparator();
+        PriorityQueue<RouterNode> fringe = new PriorityQueue<>(rnc);
+        RouterNode solution = aStar(g, fringe, startPoint, endPoint);
+        Stack<Long> toolStack = new Stack<>();
+        List<Long> wayNodes = new LinkedList<>();
+        RouterNode pointer = solution;
+        while (pointer != null) {
+            toolStack.add(pointer.id);
+            pointer = pointer.previous;
+        }
+        while (!toolStack.isEmpty()) {
+            wayNodes.add(toolStack.pop());
+        }
+        return wayNodes; // FIXME
+    }
+
+    private static RouterNode aStar(GraphDB g, PriorityQueue<RouterNode> fringe,
+                       long startPoint, long endPoint) {
+        Map<Long, Boolean> marked = new HashMap<>();
+        for (long id : g.vertices()) {
+            marked.put(id, false);
+        }
+        RouterNode firstNode = new RouterNode(startPoint, endPoint,
+                0, null, g.distance(startPoint, endPoint));
+        fringe.add(firstNode);
+        while (!fringe.isEmpty()) {
+            RouterNode current = fringe.poll();
+            marked.put(current.id, true);
+            if (current.id == endPoint) {
+                return current;
+            }
+            for (long id : g.adjacent(current.id)) {
+                if (!marked.get(id)) {
+                    double totalMoves = current.moves + g.distance(current.id, id);
+                    RouterNode nextNode = new RouterNode(id, endPoint, totalMoves, current,
+                            g.distance(id, endPoint));
+                    fringe.add(nextNode);
+                }
+            }
+        }
+        return null;
     }
 
     /**
@@ -37,7 +77,34 @@ public class Router {
      * route.
      */
     public static List<NavigationDirection> routeDirections(GraphDB g, List<Long> route) {
-        return null; // FIXME
+        List<NavigationDirection> guidance = new LinkedList<NavigationDirection>();
+        long firstId = route.get(0);
+        long secondId = route.get(1);
+        String currentWay = g.findWay(firstId, secondId);
+        int currentDirection = NavigationDirection.START;
+        int i = 1;
+        while (i < route.size()) {
+            long newId = route.get(i);
+            long oneBeforeNewId = route.get(i - 1);
+            String newWay = g.findWay(oneBeforeNewId, newId);
+            if (newWay == currentWay && i < route.size() - 1) {
+                i += 1;
+                continue;
+            }
+            double bearing2 = g.bearing(firstId, oneBeforeNewId);
+            double bearing1 = g.bearing(oneBeforeNewId, newId);
+            NavigationDirection firstGuidance =
+                    new NavigationDirection(currentDirection,
+                            currentWay, g.distance(firstId, oneBeforeNewId));
+            guidance.add(firstGuidance);
+            currentWay = newWay;
+            firstId = oneBeforeNewId;
+            currentDirection = calculateDirection(bearing1 - bearing2);
+            if (i == route.size() - 1) {
+                break;
+            }
+        }
+        return guidance; // FIXME
     }
 
 
@@ -92,6 +159,12 @@ public class Router {
             this.direction = STRAIGHT;
             this.way = UNKNOWN_ROAD;
             this.distance = 0.0;
+        }
+
+        public NavigationDirection(int direction, String way, double distance) {
+            this.direction = direction;
+            this.way = way;
+            this.distance = distance;
         }
 
         public String toString() {
@@ -159,5 +232,91 @@ public class Router {
         public int hashCode() {
             return Objects.hash(direction, way, distance);
         }
+    }
+
+    /**
+     * Helper classes and functions.
+     */
+
+    private static class RouterNode {
+        // static public GraphDB g;
+        private long id;
+        private long endPoint;
+        private double moves;
+        private RouterNode previous;
+        private double estimatedDistance;
+
+        /*RouterNode(GraphDB g, long id, long endPoint, double moves, RouterNode previous) {
+            this.g = g;
+            this.id = id;
+            this.endPoint = endPoint;
+            this.moves = moves;
+            this.previous = previous;
+            this.estimatedDistance = estimatedDistance(g, id, endPoint);
+        }*/
+
+        RouterNode(long id, long endPoint, double moves, RouterNode previous,
+                   double estimatedDistance) {
+            this.id = id;
+            this.endPoint = endPoint;
+            this.moves = moves;
+            this.previous = previous;
+            // this.estimatedDistance = estimatedDistance(g, id, endPoint);
+            this.estimatedDistance = estimatedDistance;
+        }
+    }
+    /**
+     * To compare the A* priority between two nodes.
+     */
+    private static class RouterNodeComparator implements Comparator<RouterNode> {
+        @Override
+        public int compare(RouterNode rn1, RouterNode rn2) {
+            double cost1 = rn1.moves + rn1.estimatedDistance;
+            double cost2 = rn2.moves + rn2.estimatedDistance;
+            if (cost1 < cost2) {
+                return -1;
+            }
+            if (cost1 == cost2) {
+                return 0;
+            }
+            return 1;
+        }
+    }
+
+
+    /**
+     * Estimated distance to the end point.
+     */
+    private static double estimatedDistance(GraphDB g, long id, long endPoint) {
+        return g.distance(id, endPoint);
+    }
+
+    /**
+     * Given the bearing, calculate the direction
+     */
+    private static int calculateDirection(double bearing) {
+        if (bearing >= -15 && bearing <= 15) {
+            return NavigationDirection.STRAIGHT;
+        }
+        if (bearing < -15 && bearing >= -30) {
+            return NavigationDirection.SLIGHT_LEFT;
+        }
+        if (bearing < -30 && bearing >= -100) {
+            return NavigationDirection.LEFT;
+        }
+        if (bearing < -100) {
+            return NavigationDirection.SHARP_LEFT;
+        }
+
+        if (bearing > 15 && bearing <= 30) {
+            return NavigationDirection.SLIGHT_RIGHT;
+        }
+        if (bearing > 30 && bearing <= 100) {
+            return NavigationDirection.RIGHT;
+        }
+        if (bearing > 100) {
+            return NavigationDirection.SHARP_RIGHT;
+        }
+        return NavigationDirection.NUM_DIRECTIONS;
     }
 }

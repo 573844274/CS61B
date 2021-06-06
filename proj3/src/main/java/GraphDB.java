@@ -6,7 +6,7 @@ import java.io.IOException;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-import java.util.ArrayList;
+import java.util.*;
 
 /**
  * Graph for storing all of the intersection (vertex) and road (edge) information.
@@ -20,7 +20,11 @@ import java.util.ArrayList;
 public class GraphDB {
     /** Your instance variables for storing the graph. You should consider
      * creating helper classes, e.g. Node, Edge, etc. */
-
+    private LinkedList<Long> allNodesId = new LinkedList<Long>();
+    private HashMap<Long, Node> nodesMap = new HashMap<Long, Node>();
+    private Map<Long, HashSet<Long>> adjacencyLists = new HashMap<Long, HashSet<Long>>();
+    private Map<String, HashSet<Long>> wayNodes = new HashMap<String, HashSet<Long>>();
+    // private List<Long> vertices = new ArrayList<>();
     /**
      * Example constructor shows how to create and start an XML parser.
      * You do not need to modify this constructor, but you're welcome to do so.
@@ -58,6 +62,12 @@ public class GraphDB {
      */
     private void clean() {
         // TODO: Your code here.
+        for (long key : allNodesId) {
+            if (adjacencyLists.get(key).size() == 0) {
+                nodesMap.remove(key);
+                adjacencyLists.remove(key);
+            }
+        }
     }
 
     /**
@@ -66,7 +76,7 @@ public class GraphDB {
      */
     Iterable<Long> vertices() {
         //YOUR CODE HERE, this currently returns only an empty list.
-        return new ArrayList<Long>();
+        return nodesMap.keySet();
     }
 
     /**
@@ -75,7 +85,7 @@ public class GraphDB {
      * @return An iterable of the ids of the neighbors of v.
      */
     Iterable<Long> adjacent(long v) {
-        return null;
+        return adjacencyLists.get(v);
     }
 
     /**
@@ -136,7 +146,16 @@ public class GraphDB {
      * @return The id of the node in the graph closest to the target.
      */
     long closest(double lon, double lat) {
-        return 0;
+        long closestId = 0;
+        double closestDist = Integer.MAX_VALUE;
+        for (long id : nodesMap.keySet()) {
+            if (distance(nodesMap.get(id).lon, nodesMap.get(id).lat, lon, lat)
+                    < closestDist) {
+                closestDist = distance(nodesMap.get(id).lon, nodesMap.get(id).lat, lon, lat);
+                closestId = id;
+            }
+        }
+        return closestId;
     }
 
     /**
@@ -145,7 +164,7 @@ public class GraphDB {
      * @return The longitude of the vertex.
      */
     double lon(long v) {
-        return 0;
+        return nodesMap.get(v).lon;
     }
 
     /**
@@ -154,6 +173,97 @@ public class GraphDB {
      * @return The latitude of the vertex.
      */
     double lat(long v) {
-        return 0;
+        return nodesMap.get(v).lat;
+    }
+
+    /**
+     * Helper classes and functions.
+     */
+    static class Node {
+        private final double lon;
+        private final double lat;
+        private final Long id;
+        private Map<String, String> extraInfo;
+
+        public Node(double lon, double lat, Long id) {
+            this.lon = lon;
+            this.lat = lat;
+            this.id = id;
+            extraInfo = new HashMap<String, String>();
+        }
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) {
+                return true;
+            }
+            if (obj == null || this.getClass() != obj.getClass()) {
+                return false;
+            }
+            Node that = (Node) obj;
+            return this.id.equals(that.id);
+        }
+        @Override
+        public int hashCode() {
+            return id.hashCode();
+        }
+
+        /**
+         * Add extra information of the nodes, such as names.
+         * @param k
+         * @param v
+         */
+        public void addInfo(String k, String v) {
+            extraInfo.put(k, v);
+        }
+    }
+
+    /**
+     * Add a new node in to the graph.
+     * @param lon
+     * @param lat
+     * @param id
+     */
+    public void addNode(double lon, double lat, long id) {
+        allNodesId.add(id);
+        nodesMap.put(id, new Node(lon, lat, id));
+        adjacencyLists.put(id, new HashSet<Long>());
+    }
+    public void addNode(Node node) {
+        allNodesId.add(node.id);
+        nodesMap.put(node.id, node);
+        adjacencyLists.put(node.id, new HashSet<Long>());
+        // vertices.add(node.id);
+    }
+
+    public void addEdge(long v, long w) {
+        if (nodesMap.get(v) != null && nodesMap.get(w) != null) {
+            adjacencyLists.get(v).add(w);
+            adjacencyLists.get(w).add(v);
+        }
+    }
+    public void addEdge(Node nd1, Node nd2) {
+        adjacencyLists.get(nd1.id).add(nd2.id);
+        adjacencyLists.get(nd2.id).add(nd1.id);
+    }
+
+    /**
+     * Store a node into the way.
+     */
+    public void addWayNode(String wayName, long v) {
+        if (!wayNodes.containsKey(wayName)) {
+            wayNodes.put(wayName, new HashSet<Long>());
+        }
+        wayNodes.get(wayName).add(v);
+    }
+    /**
+     * Find the way containing given two nodes.
+     */
+    public String findWay(long w, long v) {
+        for (String way : wayNodes.keySet()) {
+            if (wayNodes.get(way).contains(w) && wayNodes.get(way).contains(v)) {
+                return way;
+            }
+        }
+        return "unknown road";
     }
 }
