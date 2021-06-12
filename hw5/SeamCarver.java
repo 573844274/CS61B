@@ -17,7 +17,7 @@ public class SeamCarver {
 
     // current picture
     public Picture picture() {
-        return picture;
+        return new Picture(picture);
     }
     // width of current picture
     public int width() {
@@ -61,6 +61,9 @@ public class SeamCarver {
                 minTotalEnergy = totalMinEnergy[i][H - 1];
                 bottomIndex = i;
             }
+        }
+        if (H == 1) {
+            return new int[]{bottomIndex};
         }
         indexes.push(bottomIndex);
         for (int j = H - 1; j > 0; j -= 1) {
